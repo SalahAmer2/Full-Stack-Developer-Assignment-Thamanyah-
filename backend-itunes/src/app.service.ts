@@ -79,6 +79,8 @@ export class AppService {
       },
     });
 
+    console.log('Trending response:', response.data);
+
     // Filter playable episodes
     const episodes = response.data.results.filter((ep: any) => ep.previewUrl).map((ep: any) => ({
       trackId: ep.trackId,
