@@ -66,34 +66,72 @@ export class AppService {
   // }
 
   async getTrending(): Promise<any[]> {
-    const trendingTerms = ['Joe Rogan', 'true crime', 'history', 'news', 'interviews'];
-    const randomTerm = trendingTerms[Math.floor(Math.random() * trendingTerms.length)];
+  const trendingTerms = ['Joe Rogan', 'true crime', 'history', 'news', 'comedy'];
+  const randomTerm = trendingTerms[Math.floor(Math.random() * trendingTerms.length)];
 
-    const url = 'https://itunes.apple.com/search';
-    const response = await this.http.axiosRef.get(url, {
-      params: {
-        term: randomTerm,
-        media: 'podcast',
-        entity: 'podcastEpisode',
-        limit: 20,
-      },
+  //const url = 'https://itunes.apple.com/search'; //https://itunes.apple.com/search?term=top&media=podcast&entity=podcast&limit=20
+  const url = 'https://itunes.apple.com/search?term=top&media=podcast&entity=podcast&limit=20';
+  // const response = await this.http.axiosRef.get(url, {
+  //   params: {
+  //     term: randomTerm,
+  //     media: 'podcast',
+  //     entity: 'podcast', // ✅ Get shows, not episodes
+  //     limit: 20,
+  //   },
+  // });
+  const response = await this.http.axiosRef.get(url);
+
+  const shows = response.data.results.map((item: any) => ({
+    trackId: item.trackId,
+    trackName: item.trackName,
+    artistName: item.artistName,
+    artworkUrl600: item.artworkUrl600,
+    feedUrl: item.feedUrl,
+    collectionName: item.collectionName,
+  }));
+
+  // ✅ Save to Prisma
+  for (const show of shows) {
+    await this.prisma.podcast.upsert({
+      where: { trackId: show.trackId },
+      update: {}, // you can optionally update if needed
+      create: show,
     });
-
-    console.log('Trending response:', response.data);
-
-    // Filter playable episodes
-    const episodes = response.data.results.filter((ep: any) => ep.previewUrl).map((ep: any) => ({
-      trackId: ep.trackId,
-      trackName: ep.trackName,
-      artistName: ep.artistName,
-      previewUrl: ep.previewUrl,
-      releaseDate: ep.releaseDate,
-      artworkUrl600: ep.artworkUrl600,
-      collectionName: ep.collectionName,
-    }));
-
-    return episodes;
   }
+
+  return shows;
+}
+
+
+  // async getTrending(): Promise<any[]> {
+  //   const trendingTerms = ['Joe Rogan', 'true crime', 'history', 'news', 'interviews'];
+  //   const randomTerm = trendingTerms[Math.floor(Math.random() * trendingTerms.length)];
+
+  //   const url = 'https://itunes.apple.com/search';
+  //   const response = await this.http.axiosRef.get(url, {
+  //     params: {
+  //       term: randomTerm,
+  //       media: 'podcast',
+  //       entity: 'podcastEpisode',
+  //       limit: 20,
+  //     },
+  //   });
+
+  //   console.log('Trending response:', response.data);
+
+  //   // Filter playable episodes
+  //   const episodes = response.data.results.filter((ep: any) => ep.previewUrl).map((ep: any) => ({
+  //     trackId: ep.trackId,
+  //     trackName: ep.trackName,
+  //     artistName: ep.artistName,
+  //     previewUrl: ep.previewUrl,
+  //     releaseDate: ep.releaseDate,
+  //     artworkUrl600: ep.artworkUrl600,
+  //     collectionName: ep.collectionName,
+  //   }));
+
+  //   return episodes;
+  // }
 
   async getTrendingByGenre(genre: string): Promise<any[]> {
     const url = 'https://itunes.apple.com/search';
