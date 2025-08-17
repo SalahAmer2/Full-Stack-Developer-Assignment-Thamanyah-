@@ -12,8 +12,12 @@ model Podcast {
   trackId       Int     @unique
   trackName     String
   artistName    String
-  feedUrl       String
-  artworkUrl600 String
+  feedUrl        String?
+  artworkUrl600  String?
+
+  queues     Queue[]
+  favorites  Favorite[]
+  recents    Recent[]
 }
 
 model User {
@@ -21,4 +25,43 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  queue     Queue[]
+  favorites Favorite[]
+  recents   Recent[]
+}
+
+model Queue {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  podcastId Int
+  createdAt DateTime @default(now())
+
+  user     User    @relation(fields: [userId], references: [id])
+  podcast  Podcast @relation(fields: [podcastId], references: [id])
+
+  @@unique([userId, podcastId], name: "userId_podcastId")
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  podcastId Int
+  createdAt DateTime @default(now())
+
+  user     User    @relation(fields: [userId], references: [id])
+  podcast  Podcast @relation(fields: [podcastId], references: [id])
+
+  @@unique([userId, podcastId], name: "userId_podcastId")
+}
+
+model Recent {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  podcastId Int
+  createdAt DateTime @default(now())
+
+  user     User    @relation(fields: [userId], references: [id])
+  podcast  Podcast @relation(fields: [podcastId], references: [trackId])
+
+  @@unique([userId, podcastId], name: "userId_podcastId") // ensure uniqueness per user
 }

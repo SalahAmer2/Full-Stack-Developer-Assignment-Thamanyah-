@@ -19,4 +19,10 @@ export class AppController {
     return this.appService.getTrendingByGenre(genre);
   }
 
+  // @Post('recents/add')
+  // @UseGuards(AuthGuard('jwt'))
+  // async addRecent(@Req() req, @Body('podcastId') podcastId: number) {
+  //   return this.recentsService.addToRecents(req.user.sub, podcastId);
+  // }
+
 }

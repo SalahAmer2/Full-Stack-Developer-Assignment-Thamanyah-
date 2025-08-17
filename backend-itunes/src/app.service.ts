@@ -148,3 +148,103 @@ export class AppService {
   
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// import { Injectable } from '@nestjs/common';
+// import { HttpService } from '@nestjs/axios';
+// import { PrismaService } from './prisma.service';
+
+// @Injectable()
+// export class AppService {
+//   constructor(
+//     private readonly http: HttpService,
+//     private readonly prisma: PrismaService
+//   ) {}
+
+//   // 🔍 Search iTunes and store in DB
+//   async searchAndStore(term: string): Promise<any> {
+//     const url = 'https://itunes.apple.com/search';
+//     const response = await this.http.axiosRef.get(url, {
+//       params: { term, entity: 'podcast' }
+//     });
+
+//     const podcasts = response.data.results.map((item) => ({
+//       trackId: item.trackId,
+//       trackName: item.trackName,
+//       artistName: item.artistName,
+//       feedUrl: item.feedUrl,
+//       artworkUrl600: item.artworkUrl600,
+//     }));
+
+//     // 🔑 Save in DB and return with internal ID
+//     const saved = [];
+//     for (const podcast of podcasts) {
+//       const dbPodcast = await this.prisma.podcast.upsert({
+//         where: { trackId: podcast.trackId },
+//         update: {},
+//         create: podcast,
+//       });
+//       saved.push(dbPodcast); // <-- includes "id"
+//     }
+
+//     return saved; // ✅ has both `id` (internal) and `trackId` (external)
+//   }
+
+//   // 🔥 Trending
+//   async getTrending(): Promise<any[]> {
+//     const url = 'https://itunes.apple.com/search?term=top&media=podcast&entity=podcast&limit=20';
+//     const response = await this.http.axiosRef.get(url);
+
+//     const shows = response.data.results.map((item: any) => ({
+//       trackId: item.trackId,
+//       trackName: item.trackName,
+//       artistName: item.artistName,
+//       feedUrl: item.feedUrl,
+//       artworkUrl600: item.artworkUrl600,
+//       collectionName: item.collectionName,
+//     }));
+
+//     const saved = [];
+//     for (const show of shows) {
+//       const dbShow = await this.prisma.podcast.upsert({
+//         where: { trackId: show.trackId },
+//         update: {},
+//         create: show,
+//       });
+//       saved.push(dbShow); // <-- includes "id"
+//     }
+
+//     return saved;
+//   }
+
+//   // 🎵 Trending by Genre
+//   async getTrendingByGenre(genre: string): Promise<any[]> {
+//     const url = 'https://itunes.apple.com/search';
+//     const response = await this.http.axiosRef.get(url, {
+//       params: {
+//         term: genre,
+//         entity: 'podcast',
+//         limit: 20,
+//       },
+//     });
+
+//     const podcasts = response.data.results.map((item: any) => ({
+//       trackId: item.trackId,
+//       trackName: item.trackName,
+//       artistName: item.artistName,
+//       feedUrl: item.feedUrl,
+//       artworkUrl600: item.artworkUrl600,
+//     }));
+
+//     const saved = [];
+//     for (const podcast of podcasts) {
+//       const dbPodcast = await this.prisma.podcast.upsert({
+//         where: { trackId: podcast.trackId },
+//         update: {},
+//         create: podcast,
+//       });
+//       saved.push(dbPodcast); // <-- includes "id"
+//     }
+
+//     return saved;
+//   }
+// }
