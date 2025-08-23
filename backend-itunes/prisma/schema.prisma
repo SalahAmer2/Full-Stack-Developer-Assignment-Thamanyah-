@@ -9,11 +9,13 @@ datasource db {
 
 model Podcast {
   id            Int     @id @default(autoincrement())
-  trackId       Int     @unique
+  trackId       BigInt   @unique   // ✅ change from Int → BigInt
   trackName     String
   artistName    String
-  feedUrl        String?
+  feedUrl       String?   @db.Text
   artworkUrl600  String?
+  releaseDate   DateTime?
+  audioUrl      String?   @db.Text   // ✅ New field for preview/episode URL
 
   queues     Queue[]
   favorites  Favorite[]
@@ -33,11 +35,11 @@ model User {
 model Queue {
   id        Int      @id @default(autoincrement())
   userId    Int
-  podcastId Int
+  podcastId BigInt   @unique   // ✅ change from Int → BigInt
   createdAt DateTime @default(now())
 
   user     User    @relation(fields: [userId], references: [id])
-  podcast  Podcast @relation(fields: [podcastId], references: [id])
+  podcast  Podcast @relation(fields: [podcastId], references: [trackId]) //changed references: [id] to trackId, new code shows that 
 
   @@unique([userId, podcastId], name: "userId_podcastId")
 }
@@ -45,11 +47,11 @@ model Queue {
 model Favorite {
   id        Int      @id @default(autoincrement())
   userId    Int
-  podcastId Int
+  podcastId BigInt   @unique   // ✅ change from Int → BigInt
   createdAt DateTime @default(now())
 
   user     User    @relation(fields: [userId], references: [id])
-  podcast  Podcast @relation(fields: [podcastId], references: [id])
+  podcast  Podcast @relation(fields: [podcastId], references: [trackId]) //changed references: [id] to trackId, new code shows that
 
   @@unique([userId, podcastId], name: "userId_podcastId")
 }
@@ -57,11 +59,11 @@ model Favorite {
 model Recent {
   id        Int      @id @default(autoincrement())
   userId    Int
-  podcastId Int
+  podcastId BigInt   @unique   // ✅ change from Int → BigInt
   createdAt DateTime @default(now())
 
   user     User    @relation(fields: [userId], references: [id])
-  podcast  Podcast @relation(fields: [podcastId], references: [trackId])
+  podcast  Podcast @relation(fields: [podcastId], references: [trackId]) //was already trackId, interesting
 
   @@unique([userId, podcastId], name: "userId_podcastId") // ensure uniqueness per user
 }
